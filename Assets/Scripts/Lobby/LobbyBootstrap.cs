@@ -1,6 +1,6 @@
 ﻿using Lobby.Services.Ui;
 using Lobby.Services.Ui.Impl;
-using Ui;
+using Ui.Lobby;
 using UnityEngine;
 
 namespace Lobby
@@ -15,6 +15,7 @@ namespace Lobby
             IUiService uiService = new UiService(_lobbyWindow, _menuWindow);
             
             _menuWindow.Initialize(uiService);
+            _lobbyWindow.Initialize(uiService);
         }
     }
 }

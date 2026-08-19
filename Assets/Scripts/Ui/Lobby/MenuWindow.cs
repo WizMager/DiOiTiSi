@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Lobby.Services.Ui;
 using Services;
 using Unity.Services.Authentication;
@@ -8,7 +7,7 @@ using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ui
+namespace Ui.Lobby
 {
     public class MenuWindow : MonoBehaviour
     {

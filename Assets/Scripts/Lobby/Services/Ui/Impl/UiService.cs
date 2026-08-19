@@ -1,4 +1,4 @@
-﻿using Ui;
+﻿using Ui.Lobby;
 
 namespace Lobby.Services.Ui.Impl
 {
