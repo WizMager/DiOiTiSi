@@ -48,7 +48,6 @@ namespace Ui
             
                 var session = await MultiplayerService.Instance.CreateSessionAsync(options);
                 SessionService.Instance.SetSession(session);
-                Debug.Log($"Session created: {SessionService.Instance.HostSession?.Code}");
                 _uiService.CloseWindow(ELobbyWindow.MenuWindow);
                 _uiService.OpenWindow(ELobbyWindow.LobbyWindow);
             }
