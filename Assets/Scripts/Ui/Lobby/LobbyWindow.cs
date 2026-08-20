@@ -1,4 +1,5 @@
-﻿using Lobby.Services.Ui;
+﻿using System.Collections.Generic;
+using Lobby.Services.Ui;
 using Services;
 using TMPro;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Ui.Lobby
         [SerializeField] private Button _startGameButton;
         [SerializeField] private TMP_InputField _changeNicknameField;
 
-        private IUiService _uiService;
+        private readonly Dictionary<string, GameObject> _players = new();
         
         private void Start()
         {
@@ -24,13 +25,12 @@ namespace Ui.Lobby
             _roomCode.onSelect.AddListener(OnCodeCLicked);
             _changeNicknameField.onValueChanged.AddListener(OnNicknameChanged);
 
-            _roomCode.text = SessionService.Instance.HostSession?.Code;
+            _roomCode.text = SessionService.Instance.Session?.Code;
             _startGameButton.gameObject.SetActive(false);
-        }
 
-        public void Initialize(IUiService uiService)
-        {
-            _uiService = uiService;
+            SessionService.Instance.PlayerJoined += OnPlayerJoined;
+            SessionService.Instance.PlayerLeaving += OnPlayerLeaving;
+            SessionService.Instance.PlayerPropertiesChanged += OnPlayerPropertyChanged;
         }
 
         private void OnReadyClicked()
@@ -49,7 +49,22 @@ namespace Ui.Lobby
             
         }
         
-        private void OnNicknameChanged(string arg0)
+        private void OnNicknameChanged(string newNickname)
+        {
+            
+        }
+        
+        private void OnPlayerJoined(string playerId)
+        {
+            
+        }
+
+        private void OnPlayerLeaving(string playerId)
+        {
+            
+        }
+
+        private void OnPlayerPropertyChanged(List<LobbyPlayer> players)
         {
             
         }

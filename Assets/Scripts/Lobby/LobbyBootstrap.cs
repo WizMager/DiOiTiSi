@@ -15,7 +15,6 @@ namespace Lobby
             IUiService uiService = new UiService(_lobbyWindow, _menuWindow);
             
             _menuWindow.Initialize(uiService);
-            _lobbyWindow.Initialize(uiService);
         }
     }
 }
