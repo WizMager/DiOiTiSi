@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Lobby.Services.Ui;
 using Services;
 using TMPro;
 using UnityEngine;
@@ -9,21 +8,25 @@ namespace Ui.Lobby
 {
     public class LobbyWindow : MonoBehaviour
     {
-        [SerializeField] private GameObject _playersContainer;
+        [SerializeField] private Transform _playersContainer;
         [SerializeField] private GameObject _playerItemPrefab;
         [SerializeField] private TMP_InputField _roomCode;
         [SerializeField] private Button _readyButton;
+        [SerializeField] private Image _readyButtonImage;
         [SerializeField] private Button _startGameButton;
         [SerializeField] private TMP_InputField _changeNicknameField;
 
-        private readonly Dictionary<string, GameObject> _players = new();
+        private readonly Dictionary<string, PlayerItem> _players = new();
+        
+        private bool _isReady;
+        private string _nickname;
         
         private void Start()
         {
             _readyButton.onClick.AddListener(OnReadyClicked);
             _startGameButton.onClick.AddListener(OnStartClicked);
-            _roomCode.onSelect.AddListener(OnCodeCLicked);
-            _changeNicknameField.onValueChanged.AddListener(OnNicknameChanged);
+            _roomCode.onSelect.AddListener(OnCodeClicked);
+            _changeNicknameField.onEndEdit.AddListener(OnNicknameChanged);
 
             _roomCode.text = SessionService.Instance.Session?.Code;
             _startGameButton.gameObject.SetActive(false);
@@ -35,7 +38,9 @@ namespace Ui.Lobby
 
         private void OnReadyClicked()
         {
-            
+            _isReady = !_isReady;
+            _readyButtonImage.color = _isReady ? Color.green : Color.red;
+            SessionService.Instance.SetReady(_isReady);
         }
 
         private void OnStartClicked()
@@ -44,29 +49,54 @@ namespace Ui.Lobby
         }
 
 
-        private void OnCodeCLicked(string code)
+        private void OnCodeClicked(string code)
         {
             
         }
         
         private void OnNicknameChanged(string newNickname)
         {
+            if (_nickname == newNickname)
+                return;
             
+            _nickname = newNickname;
+            SessionService.Instance.SetNickname(newNickname);
         }
         
         private void OnPlayerJoined(string playerId)
         {
-            
+            CreatePlayerItem(playerId, $"Player{playerId}", false);
         }
 
         private void OnPlayerLeaving(string playerId)
         {
-            
+            var playerItem = _players[playerId];
+            _players.Remove(playerId);
+            Destroy(playerItem);
         }
 
         private void OnPlayerPropertyChanged(List<LobbyPlayer> players)
         {
-            
+            foreach (var player in players)
+            {
+                if (_players.ContainsKey(player.Id))
+                {
+                    _players[player.Id].SetNickname(player.Nickname);
+                    _players[player.Id].SetReadyStatus(player.IsReady);
+                }
+                else
+                {
+                    CreatePlayerItem(player.Id, player.Nickname, player.IsReady);
+                }
+            }
+        }
+
+        private void CreatePlayerItem(string playerId, string nickname, bool isReady)
+        {
+            var playerItem = Instantiate(_playerItemPrefab, _playersContainer).GetComponent<PlayerItem>();
+            playerItem.SetNickname(nickname);
+            playerItem.SetReadyStatus(isReady);
+            _players.Add(playerId, playerItem);
         }
     }
 }

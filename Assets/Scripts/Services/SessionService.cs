@@ -46,12 +46,12 @@ namespace Services
 
         private void OnPlayerJoined(string playerId)
         {
-            
+            PlayerJoined?.Invoke(playerId);
         }
 
         private void OnPlayerLeaving(string playerId)
         {
-            
+            PlayerLeaving?.Invoke(playerId);
         }
 
         private void OnPlayerPropertyChanged()
@@ -83,6 +83,16 @@ namespace Services
             Session = null;
         }
 
+        public void SetNickname(string nickname)
+        {
+            Session.CurrentPlayer.SetProperty("nick", new PlayerProperty(nickname));
+        }
+
+        public void SetReady(bool isReady)
+        {
+            Session.CurrentPlayer.SetProperty("ready", new PlayerProperty(isReady ? "1" : "0"));
+        }
+        
         private void OnDestroy()
         {
             if (Session == null)

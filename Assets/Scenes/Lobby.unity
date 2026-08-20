@@ -868,10 +868,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2db5b1c67841aa8397e5db6a289585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ui.LobbyWindow
-  _playersContainer: {fileID: 1358171806}
+  _playersContainer: {fileID: 1358171807}
   _playerItemPrefab: {fileID: 3986533352146684889, guid: cb0582dc531ba4142815c8f61d7abcb1, type: 3}
   _roomCode: {fileID: 1829051109}
   _readyButton: {fileID: 1040984938}
+  _readyButtonImage: {fileID: 1040984939}
   _startGameButton: {fileID: 36976565}
   _changeNicknameField: {fileID: 1581712891}
 --- !u!1 &554008708
@@ -2375,9 +2376,9 @@ MonoBehaviour:
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_CustomCaretColor: 0
-  m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
+  m_CaretColor: {r: 0.43529412, g: 0.43529412, b: 0.43529412, a: 1}
+  m_CustomCaretColor: 1
+  m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0}
   m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
