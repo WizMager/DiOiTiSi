@@ -5,6 +5,6 @@
         None = 0,
         LobbyWindow = 1,
         MenuWindow = 2,
-        EnterLobbyCodePopup = 3
+        LobbyEnterPopup = 3
     }
 }

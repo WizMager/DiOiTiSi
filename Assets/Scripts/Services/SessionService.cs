@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 
@@ -10,6 +12,8 @@ namespace Services
         public event Action<string> PlayerJoined;
         public event Action<string> PlayerLeaving;
         public event Action<List<LobbyPlayer>> PlayerPropertiesChanged;
+        public event Action OnServicesInitialized;
+        public event Action OnGameStarted;
         
         private bool _isInitialized;
         
@@ -29,6 +33,11 @@ namespace Services
             Instance = this;
             
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void Start()
+        {
+            InitializeServices();
         }
 
         public void SetSession(ISession session)
@@ -86,11 +95,36 @@ namespace Services
         public void SetNickname(string nickname)
         {
             Session.CurrentPlayer.SetProperty("nick", new PlayerProperty(nickname));
+            Session.SaveCurrentPlayerDataAsync();
         }
 
         public void SetReady(bool isReady)
         {
             Session.CurrentPlayer.SetProperty("ready", new PlayerProperty(isReady ? "1" : "0"));
+            Session.SaveCurrentPlayerDataAsync();
+        }
+
+        public void StartGame()
+        {
+            
+        }
+        
+        private async void InitializeServices()
+        {
+            try
+            {
+                if (UnityServices.State != ServicesInitializationState.Initialized)
+                    await UnityServices.InitializeAsync();
+
+                if (!AuthenticationService.Instance.IsSignedIn)
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                
+                OnServicesInitialized?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to initialize services with error {e.Message}");
+            }
         }
         
         private void OnDestroy()

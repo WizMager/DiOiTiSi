@@ -9,12 +9,14 @@ namespace Lobby
     {
         [SerializeField] private LobbyWindow _lobbyWindow;
         [SerializeField] private MenuWindow _menuWindow;
+        [SerializeField] private LobbyEnterPopup _lobbyEnterPopup;
 
         private void Start()
         {
-            IUiService uiService = new UiService(_lobbyWindow, _menuWindow);
+            IUiService uiService = new UiService(_lobbyWindow, _menuWindow, _lobbyEnterPopup);
             
             _menuWindow.Initialize(uiService);
+            _lobbyEnterPopup.Initialize(uiService);
         }
     }
 }

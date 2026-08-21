@@ -1,8 +1,6 @@
 ﻿using System;
 using Lobby.Services.Ui;
 using Services;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +18,7 @@ namespace Ui.Lobby
         {
             _hostButton.onClick.AddListener(OnHostClicked);
             _joinButton.onClick.AddListener(OnJoinClicked);
+            SessionService.Instance.OnServicesInitialized += OnServicesInitialized;
         }
 
         public void Initialize(IUiService uiService)
@@ -33,12 +32,6 @@ namespace Ui.Lobby
             {
                 _hostButton.interactable = false;
                 _joinButton.interactable = false;
-                
-                if (UnityServices.State != ServicesInitializationState.Initialized)
-                    await UnityServices.InitializeAsync();
-
-                if (!AuthenticationService.Instance.IsSignedIn)
-                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 
                 var options = new SessionOptions
                 {
@@ -60,7 +53,13 @@ namespace Ui.Lobby
 
         private void OnJoinClicked()
         {
-            
+            _uiService.OpenWindow(ELobbyWindow.LobbyEnterPopup);
+        }
+        
+        private void OnServicesInitialized()
+        {
+            _hostButton.interactable = true;
+            _joinButton.interactable = true;
         }
 
         private void OnDestroy()

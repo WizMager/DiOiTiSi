@@ -6,14 +6,17 @@ namespace Lobby.Services.Ui.Impl
     {
         private readonly LobbyWindow _lobbyWindow;
         private readonly MenuWindow _menuWindow;
+        private readonly LobbyEnterPopup _lobbyEnterPopup;
         
         public UiService(
             LobbyWindow lobbyWindow, 
-            MenuWindow menuWindow
+            MenuWindow menuWindow, 
+            LobbyEnterPopup lobbyEnterPopup
         )
         {
             _lobbyWindow = lobbyWindow;
             _menuWindow = menuWindow;
+            _lobbyEnterPopup = lobbyEnterPopup;
         }
 
         public void OpenWindow(ELobbyWindow window)
@@ -26,7 +29,8 @@ namespace Lobby.Services.Ui.Impl
                 case ELobbyWindow.MenuWindow:
                     _menuWindow.gameObject.SetActive(true);
                     break;
-                case ELobbyWindow.EnterLobbyCodePopup:
+                case ELobbyWindow.LobbyEnterPopup:
+                    _lobbyEnterPopup.gameObject.SetActive(true);
                     break;
             }
         }
@@ -41,7 +45,8 @@ namespace Lobby.Services.Ui.Impl
                 case ELobbyWindow.MenuWindow:
                     _menuWindow.gameObject.SetActive(false);
                     break;
-                case ELobbyWindow.EnterLobbyCodePopup:
+                case ELobbyWindow.LobbyEnterPopup:
+                    _lobbyEnterPopup.gameObject.SetActive(false);
                     break;
             }
         }

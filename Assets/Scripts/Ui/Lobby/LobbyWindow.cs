@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Services;
 using TMPro;
 using UnityEngine;
@@ -27,8 +28,11 @@ namespace Ui.Lobby
             _startGameButton.onClick.AddListener(OnStartClicked);
             _roomCode.onSelect.AddListener(OnCodeClicked);
             _changeNicknameField.onEndEdit.AddListener(OnNicknameChanged);
+        }
 
-            _roomCode.text = SessionService.Instance.Session?.Code;
+        private void OnEnable()
+        {
+            _roomCode.text = SessionService.Instance.Session.Code;
             _startGameButton.gameObject.SetActive(false);
 
             SessionService.Instance.PlayerJoined += OnPlayerJoined;
@@ -48,10 +52,10 @@ namespace Ui.Lobby
             
         }
 
-
         private void OnCodeClicked(string code)
         {
-            
+            code = code.Trim();
+            GUIUtility.systemCopyBuffer = code;
         }
         
         private void OnNicknameChanged(string newNickname)
@@ -77,6 +81,7 @@ namespace Ui.Lobby
 
         private void OnPlayerPropertyChanged(List<LobbyPlayer> players)
         {
+            var readyCounter = 0;
             foreach (var player in players)
             {
                 if (_players.ContainsKey(player.Id))
@@ -88,7 +93,14 @@ namespace Ui.Lobby
                 {
                     CreatePlayerItem(player.Id, player.Nickname, player.IsReady);
                 }
+
+                if (player.IsReady)
+                {
+                    readyCounter++;
+                }
             }
+
+            _startGameButton.gameObject.SetActive(readyCounter == players.Count);
         }
 
         private void CreatePlayerItem(string playerId, string nickname, bool isReady)
@@ -97,6 +109,20 @@ namespace Ui.Lobby
             playerItem.SetNickname(nickname);
             playerItem.SetReadyStatus(isReady);
             _players.Add(playerId, playerItem);
+        }
+
+        private void OnDisable()
+        {
+            SessionService.Instance.PlayerJoined -= OnPlayerJoined;
+            SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
+            SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+        }
+
+        private void OnDestroy()
+        {
+            SessionService.Instance.PlayerJoined -= OnPlayerJoined;
+            SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
+            SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
         }
     }
 }
