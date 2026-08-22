@@ -81,7 +81,7 @@ namespace Ui.Lobby
             _hostButton.onClick.RemoveAllListeners();
             _joinButton.onClick.RemoveAllListeners();
             
-            if (_isSubscribedOnServiceInitialize)
+            if (_isSubscribedOnServiceInitialize && SessionService.Instance != null)
                 SessionService.Instance.OnServicesInitialized -= OnServicesInitialized;
         }
     }

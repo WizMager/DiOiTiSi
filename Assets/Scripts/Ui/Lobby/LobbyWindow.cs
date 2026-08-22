@@ -155,10 +155,13 @@ namespace Ui.Lobby
 
         private void OnDisable()
         {
-            SessionService.Instance.PlayerJoined -= OnPlayerJoined;
-            SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
-            SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-            SessionService.Instance.OnLeaveLobby -= OnLeaveLobby;
+            if (SessionService.Instance != null)
+            {
+                SessionService.Instance.PlayerJoined -= OnPlayerJoined;
+                SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
+                SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+                SessionService.Instance.OnLeaveLobby -= OnLeaveLobby;
+            }
 
             foreach (var (_, playerItem) in _players)
             {
@@ -169,6 +172,9 @@ namespace Ui.Lobby
 
         private void OnDestroy()
         {
+            if (SessionService.Instance == null)
+                return;
+
             SessionService.Instance.PlayerJoined -= OnPlayerJoined;
             SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
