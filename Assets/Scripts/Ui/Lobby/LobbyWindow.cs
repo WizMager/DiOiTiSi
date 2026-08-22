@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Services;
 using TMPro;
 using UnityEngine;
@@ -49,7 +48,8 @@ namespace Ui.Lobby
 
         private void OnStartClicked()
         {
-            
+            _startGameButton.interactable = false;
+            SessionService.Instance.StartGame();
         }
 
         private void OnCodeClicked(string code)

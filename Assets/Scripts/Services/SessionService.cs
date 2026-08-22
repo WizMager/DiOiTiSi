@@ -4,6 +4,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Services
 {
@@ -13,7 +14,6 @@ namespace Services
         public event Action<string> PlayerLeaving;
         public event Action<List<LobbyPlayer>> PlayerPropertiesChanged;
         public event Action OnServicesInitialized;
-        public event Action OnGameStarted;
         
         private bool _isInitialized;
         
@@ -51,6 +51,7 @@ namespace Services
             Session.PlayerJoined += OnPlayerJoined;
             Session.PlayerLeaving += OnPlayerLeaving;
             Session.PlayerPropertiesChanged += OnPlayerPropertyChanged;
+            Session.SessionPropertiesChanged += OnSessionPropertyChanged;
         }
 
         private void OnPlayerJoined(string playerId)
@@ -82,11 +83,20 @@ namespace Services
             PlayerPropertiesChanged?.Invoke(playersInfoList);
         }
 
+        private void OnSessionPropertyChanged()
+        {
+            if (Session.Properties.TryGetValue("state", out var state) && state.Value == "starting")
+            {
+                SceneManager.LoadScene("Game");
+            }
+        }
+        
         public void ClearSession()
         {
             Session.PlayerJoined -= OnPlayerJoined;
             Session.PlayerLeaving -= OnPlayerLeaving;
             Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+            Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
             
             _isInitialized = false;
             Session = null;
@@ -104,9 +114,18 @@ namespace Services
             Session.SaveCurrentPlayerDataAsync();
         }
 
-        public void StartGame()
+        public async void StartGame()
         {
-            
+            try
+            {
+                Session.AsHost().SetProperty("state", new SessionProperty("starting", VisibilityPropertyOptions.Member));
+                await Session.SaveCurrentPlayerDataAsync();
+                SceneManager.LoadScene("Game");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to start game with error {e.Message}");
+            }
         }
         
         private async void InitializeServices()
@@ -135,6 +154,7 @@ namespace Services
             Session.PlayerJoined -= OnPlayerJoined;
             Session.PlayerLeaving -= OnPlayerLeaving;
             Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+            Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
         }
     }
 }
