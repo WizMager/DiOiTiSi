@@ -85,6 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5203172611665630976}
   - component: {fileID: 1780302492896123619}
+  - component: {fileID: 3830470962249993679}
   m_Layer: 5
   m_Name: PlayerItem
   m_TagString: Untagged
@@ -139,6 +140,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &3830470962249993679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3986533352146684889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0097b1d4f4c74d0ab8cad5e6d35d5bee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Ui.Lobby.PlayerItem
+  _readyImage: {fileID: 7430690725013977935}
+  _nicknameText: {fileID: 4414696047764800192}
 --- !u!1 &8244220488505416365
 GameObject:
   m_ObjectHideFlags: 0

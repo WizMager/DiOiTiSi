@@ -19,7 +19,7 @@ namespace Ui.Lobby
         
         private void Start()
         {
-            _roomCodeField.onEndEdit.AddListener(OnEnterCode);
+            _roomCodeField.onSubmit.AddListener(OnEnterCode);
             _applyCodeButton.onClick.AddListener(() => OnEnterCode(_roomCodeField.text));
             _closePopupButton.onClick.AddListener(OnPopupClosed);
         }
@@ -57,9 +57,8 @@ namespace Ui.Lobby
         {
             try
             {
-                _applyCodeButton.interactable = false;
-                _closePopupButton.interactable = false;
                 _roomCodeField.interactable = false;
+                _closePopupButton.interactable = false;
                 var session = await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
                 SessionService.Instance.SetSession(session);
                 _uiService.CloseWindow(ELobbyWindow.MenuWindow);
@@ -69,7 +68,6 @@ namespace Ui.Lobby
             catch (Exception e)
             {
                 Debug.LogError($"Failed to join session with error {e.Message}");
-                _applyCodeButton.interactable = true;
                 _closePopupButton.interactable = true;
                 _roomCodeField.interactable = true;
                 _isConnecting = false;
@@ -83,7 +81,7 @@ namespace Ui.Lobby
         
         private void OnDestroy()
         {
-            _roomCodeField.onEndEdit.RemoveAllListeners();
+            _roomCodeField.onSubmit.RemoveAllListeners();
             _applyCodeButton.onClick.RemoveAllListeners();
             _closePopupButton.onClick.RemoveAllListeners();
         }

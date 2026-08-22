@@ -54,7 +54,7 @@ namespace Services
             Session = session;
 
             Session.PlayerJoined += OnPlayerJoined;
-            Session.PlayerLeaving += OnPlayerLeaving;
+            Session.PlayerHasLeft += OnPlayerLeaving;
             Session.PlayerPropertiesChanged += OnPlayerPropertyChanged;
             Session.SessionPropertiesChanged += OnSessionPropertyChanged;
             Session.SessionHostChanged += OnSessionHostChanged;
@@ -191,7 +191,7 @@ namespace Services
                 return;
             
             Session.PlayerJoined -= OnPlayerJoined;
-            Session.PlayerLeaving -= OnPlayerLeaving;
+            Session.PlayerHasLeft -= OnPlayerLeaving;
             Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
             Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
             Session.SessionHostChanged -= OnSessionHostChanged;
@@ -206,7 +206,7 @@ namespace Services
             if (Session != null)
             {
                 Session.PlayerJoined -= OnPlayerJoined;
-                Session.PlayerLeaving -= OnPlayerLeaving;
+                Session.PlayerHasLeft -= OnPlayerLeaving;
                 Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
                 Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
                 Session.SessionHostChanged -= OnSessionHostChanged;
