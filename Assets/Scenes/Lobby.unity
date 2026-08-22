@@ -1298,6 +1298,7 @@ MonoBehaviour:
   _readyButtonImage: {fileID: 1040984939}
   _startGameButton: {fileID: 36976565}
   _changeNicknameField: {fileID: 1581712891}
+  _leaveLobbyButton: {fileID: 1826572164}
 --- !u!1 &471675576
 GameObject:
   m_ObjectHideFlags: 0
