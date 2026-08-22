@@ -14,6 +14,7 @@ namespace Services
         public event Action<string> PlayerLeaving;
         public event Action<List<LobbyPlayer>> PlayerPropertiesChanged;
         public event Action OnServicesInitialized;
+        public event Action OnChangeHostStartEnabled;
         
         private bool _isInitialized;
         
@@ -52,6 +53,7 @@ namespace Services
             Session.PlayerLeaving += OnPlayerLeaving;
             Session.PlayerPropertiesChanged += OnPlayerPropertyChanged;
             Session.SessionPropertiesChanged += OnSessionPropertyChanged;
+            Session.SessionHostChanged += OnSessionHostChanged;
         }
 
         private void OnPlayerJoined(string playerId)
@@ -91,17 +93,24 @@ namespace Services
             }
         }
         
-        public void ClearSession()
+        private void OnSessionHostChanged(string newHostId)
         {
-            Session.PlayerJoined -= OnPlayerJoined;
-            Session.PlayerLeaving -= OnPlayerLeaving;
-            Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-            Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
+            if (!Session.IsHost)
+                return;
             
-            _isInitialized = false;
-            Session = null;
-        }
+            var readyCounter = 0;
+            foreach (var player in Session.Players)
+            {
+                if (player.Properties.TryGetValue("ready", out var isReady) && isReady.Value == "1")
+                    readyCounter++;
+            }
 
+            if (readyCounter == Session.Players.Count)
+            {
+                OnChangeHostStartEnabled?.Invoke();
+            }
+        }
+        
         public void SetNickname(string nickname)
         {
             Session.CurrentPlayer.SetProperty("nick", new PlayerProperty(nickname));
@@ -127,6 +136,22 @@ namespace Services
                 Console.WriteLine($"Failed to start game with error {e.Message}");
             }
         }
+
+        public async void LeaveLobby()
+        {
+            try
+            {
+                await Session.LeaveAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error leaving lobby with error {e.Message}");
+            }
+            finally
+            {
+                ClearSession();
+            }
+        }
         
         private async void InitializeServices()
         {
@@ -146,6 +171,18 @@ namespace Services
             }
         }
         
+        private void ClearSession()
+        {
+            Session.PlayerJoined -= OnPlayerJoined;
+            Session.PlayerLeaving -= OnPlayerLeaving;
+            Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+            Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
+            Session.SessionHostChanged -= OnSessionHostChanged;
+            
+            _isInitialized = false;
+            Session = null;
+        }
+        
         private void OnDestroy()
         {
             if (Session == null)
@@ -155,6 +192,7 @@ namespace Services
             Session.PlayerLeaving -= OnPlayerLeaving;
             Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
             Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
+            Session.SessionHostChanged -= OnSessionHostChanged;
         }
     }
 }

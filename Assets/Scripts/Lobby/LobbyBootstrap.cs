@@ -17,6 +17,7 @@ namespace Lobby
             
             _menuWindow.Initialize(uiService);
             _lobbyEnterPopup.Initialize(uiService);
+            _lobbyWindow.Initialize(uiService);
         }
     }
 }

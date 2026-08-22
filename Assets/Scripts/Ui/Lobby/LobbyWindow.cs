@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Lobby.Services.Ui;
 using Services;
 using TMPro;
 using UnityEngine;
@@ -15,9 +16,11 @@ namespace Ui.Lobby
         [SerializeField] private Image _readyButtonImage;
         [SerializeField] private Button _startGameButton;
         [SerializeField] private TMP_InputField _changeNicknameField;
+        [SerializeField] private Button _leaveLobbyButton;
 
         private readonly Dictionary<string, PlayerItem> _players = new();
         
+        private IUiService _uiService;
         private bool _isReady;
         private string _nickname;
         
@@ -27,8 +30,14 @@ namespace Ui.Lobby
             _startGameButton.onClick.AddListener(OnStartClicked);
             _roomCode.onSelect.AddListener(OnCodeClicked);
             _changeNicknameField.onEndEdit.AddListener(OnNicknameChanged);
+            _leaveLobbyButton.onClick.AddListener(OnLeaveLobbyClicked);
         }
 
+        public void Initialize(IUiService uiService)
+        {
+            _uiService = uiService;
+        }
+        
         private void OnEnable()
         {
             _roomCode.text = SessionService.Instance.Session.Code;
@@ -37,6 +46,7 @@ namespace Ui.Lobby
             SessionService.Instance.PlayerJoined += OnPlayerJoined;
             SessionService.Instance.PlayerLeaving += OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged += OnPlayerPropertyChanged;
+            SessionService.Instance.OnChangeHostStartEnabled += OnChangeHostStartEnabled;
         }
 
         private void OnReadyClicked()
@@ -65,6 +75,13 @@ namespace Ui.Lobby
             
             _nickname = newNickname;
             SessionService.Instance.SetNickname(newNickname);
+        }
+        
+        private void OnLeaveLobbyClicked()
+        {
+            _uiService.CloseWindow(ELobbyWindow.LobbyWindow);
+            SessionService.Instance.LeaveLobby();
+            _uiService.OpenWindow(ELobbyWindow.MenuWindow);
         }
         
         private void OnPlayerJoined(string playerId)
@@ -103,6 +120,11 @@ namespace Ui.Lobby
             _startGameButton.gameObject.SetActive(readyCounter == players.Count);
         }
 
+        private void OnChangeHostStartEnabled()
+        {
+            _startGameButton.gameObject.SetActive(true);
+        }
+        
         private void CreatePlayerItem(string playerId, string nickname, bool isReady)
         {
             var playerItem = Instantiate(_playerItemPrefab, _playersContainer).GetComponent<PlayerItem>();
@@ -116,6 +138,7 @@ namespace Ui.Lobby
             SessionService.Instance.PlayerJoined -= OnPlayerJoined;
             SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+            SessionService.Instance.OnChangeHostStartEnabled -= OnChangeHostStartEnabled;
         }
 
         private void OnDestroy()
@@ -123,6 +146,7 @@ namespace Ui.Lobby
             SessionService.Instance.PlayerJoined -= OnPlayerJoined;
             SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+            SessionService.Instance.OnChangeHostStartEnabled -= OnChangeHostStartEnabled;
         }
     }
 }
