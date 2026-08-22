@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Lobby.Services.Ui;
 using Services;
 using TMPro;
@@ -42,6 +43,7 @@ namespace Ui.Lobby
         {
             _roomCode.text = SessionService.Instance.Session.Code;
             _startGameButton.gameObject.SetActive(false);
+            _startGameButton.interactable = true;
             _isReady = false;
             _nickname = string.Empty;
             _readyButtonImage.color = Color.red;
@@ -62,10 +64,18 @@ namespace Ui.Lobby
             SessionService.Instance.SetReady(_isReady);
         }
 
-        private void OnStartClicked()
+        private async void OnStartClicked()
         {
-            _startGameButton.interactable = false;
-            SessionService.Instance.StartGame();
+            try
+            {
+                _startGameButton.interactable = false;
+                await SessionService.Instance.StartGame();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to start game with error {e.Message}");
+                _startGameButton.interactable = true;
+            }
         }
 
         private void OnCodeClicked(string code)

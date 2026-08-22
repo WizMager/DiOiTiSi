@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
@@ -143,18 +144,11 @@ namespace Services
             }
         }
 
-        public async void StartGame()
+        public async Task StartGame()
         {
-            try
-            {
-                Session.AsHost().SetProperty("state", new SessionProperty("starting", VisibilityPropertyOptions.Member));
-                await Session.AsHost().SavePropertiesAsync();
-                SceneManager.LoadScene("Game");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to start game with error {e.Message}");
-            }
+            Session.AsHost().SetProperty("state", new SessionProperty("starting", VisibilityPropertyOptions.Member));
+            await Session.AsHost().SavePropertiesAsync();
+            SceneManager.LoadScene("Game");
         }
 
         public async void LeaveLobby()
