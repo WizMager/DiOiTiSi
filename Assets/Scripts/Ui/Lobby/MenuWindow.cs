@@ -13,12 +13,23 @@ namespace Ui.Lobby
         [SerializeField] private Button _joinButton;
 
         private IUiService _uiService;
+        private bool _isSubscribedOnServiceInitialize;
         
         private void Start()
         {
             _hostButton.onClick.AddListener(OnHostClicked);
             _joinButton.onClick.AddListener(OnJoinClicked);
-            SessionService.Instance.OnServicesInitialized += OnServicesInitialized;
+
+            if (SessionService.Instance.IsSignedIn)
+            {
+                _hostButton.interactable = true;
+                _joinButton.interactable = true;
+            }
+            else
+            {
+                _isSubscribedOnServiceInitialize = true;
+                SessionService.Instance.OnServicesInitialized += OnServicesInitialized;
+            }
         }
 
         public void Initialize(IUiService uiService)
@@ -32,12 +43,12 @@ namespace Ui.Lobby
             {
                 _hostButton.interactable = false;
                 _joinButton.interactable = false;
-                
+
                 var options = new SessionOptions
                 {
                     MaxPlayers = 4
                 }.WithRelayNetwork();
-            
+
                 var session = await MultiplayerService.Instance.CreateSessionAsync(options);
                 SessionService.Instance.SetSession(session);
                 _uiService.CloseWindow(ELobbyWindow.MenuWindow);
@@ -46,6 +57,9 @@ namespace Ui.Lobby
             catch (Exception e)
             {
                 Debug.LogError($"Failed to create session with error {e.Message}");
+            }
+            finally
+            {
                 _hostButton.interactable = true;
                 _joinButton.interactable = true;
             }
@@ -66,6 +80,9 @@ namespace Ui.Lobby
         {
             _hostButton.onClick.RemoveAllListeners();
             _joinButton.onClick.RemoveAllListeners();
+            
+            if (_isSubscribedOnServiceInitialize)
+                SessionService.Instance.OnServicesInitialized -= OnServicesInitialized;
         }
     }
 }

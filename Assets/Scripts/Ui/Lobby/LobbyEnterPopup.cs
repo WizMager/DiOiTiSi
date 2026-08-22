@@ -28,17 +28,27 @@ namespace Ui.Lobby
         {
             _uiService = uiService;
         }
-        
+
+        private void OnEnable()
+        {
+            _applyCodeButton.interactable = true;
+            _closePopupButton.interactable = true;
+            _roomCodeField.interactable = true;
+            _isConnecting = false;
+            _roomCodeField.text = string.Empty;
+        }
+
         private void OnEnterCode(string code)
         {
-            if (!_isConnecting)
+            if (_isConnecting)
                 return;
+            
+            code = code.Trim();
             
             if(string.IsNullOrEmpty(code))
                 return;
             
             _isConnecting = true;
-            code = code.Trim();
             
             ConnectToLobby(code);
         }

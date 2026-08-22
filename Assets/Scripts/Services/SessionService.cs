@@ -10,17 +10,21 @@ namespace Services
 {
     public class SessionService : MonoBehaviour
     {
-        public event Action<string> PlayerJoined;
+        public event Action PlayerJoined;
         public event Action<string> PlayerLeaving;
         public event Action<List<LobbyPlayer>> PlayerPropertiesChanged;
         public event Action OnServicesInitialized;
         public event Action OnChangeHostStartEnabled;
+        public event Action OnLeaveLobby;
         
         private bool _isInitialized;
         
         public static SessionService Instance { get; private set; }
-
+        
         public ISession Session { get; private set; }
+
+        public bool IsSignedIn => UnityServices.State == ServicesInitializationState.Initialized &&
+                                  AuthenticationService.Instance.IsSignedIn;
         
         private void Awake()
         {
@@ -54,11 +58,12 @@ namespace Services
             Session.PlayerPropertiesChanged += OnPlayerPropertyChanged;
             Session.SessionPropertiesChanged += OnSessionPropertyChanged;
             Session.SessionHostChanged += OnSessionHostChanged;
+            Session.RemovedFromSession += OnRemovedFromSession;
         }
 
         private void OnPlayerJoined(string playerId)
         {
-            PlayerJoined?.Invoke(playerId);
+            PlayerJoined?.Invoke();
         }
 
         private void OnPlayerLeaving(string playerId)
@@ -67,6 +72,11 @@ namespace Services
         }
 
         private void OnPlayerPropertyChanged()
+        {
+            PlayerPropertiesChanged?.Invoke(GetLobbyPlayers());
+        }
+
+        public List<LobbyPlayer> GetLobbyPlayers()
         {
             var playersInfoList = new List<LobbyPlayer>();
             foreach (var player in Session.Players)
@@ -82,7 +92,7 @@ namespace Services
                 });
             }
             
-            PlayerPropertiesChanged?.Invoke(playersInfoList);
+            return playersInfoList;
         }
 
         private void OnSessionPropertyChanged()
@@ -111,16 +121,40 @@ namespace Services
             }
         }
         
-        public void SetNickname(string nickname)
+        private void OnRemovedFromSession()
         {
-            Session.CurrentPlayer.SetProperty("nick", new PlayerProperty(nickname));
-            Session.SaveCurrentPlayerDataAsync();
+            OnLeaveLobby?.Invoke();
+            ClearSession();
+        }
+        
+        public async void SetNickname(string nickname)
+        {
+            try
+            {
+                Session.CurrentPlayer.SetProperty("nick", new PlayerProperty(nickname, VisibilityPropertyOptions.Member));
+                await Session.SaveCurrentPlayerDataAsync();
+            
+                OnPlayerPropertyChanged();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to set nickname with error {e.Message}");
+            }
         }
 
-        public void SetReady(bool isReady)
+        public async void SetReady(bool isReady)
         {
-            Session.CurrentPlayer.SetProperty("ready", new PlayerProperty(isReady ? "1" : "0"));
-            Session.SaveCurrentPlayerDataAsync();
+            try
+            {
+                Session.CurrentPlayer.SetProperty("ready", new PlayerProperty(isReady ? "1" : "0", VisibilityPropertyOptions.Member));
+                await Session.SaveCurrentPlayerDataAsync();
+            
+                OnPlayerPropertyChanged();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to set player ready with error {e.Message}");
+            }
         }
 
         public async void StartGame()
@@ -128,12 +162,12 @@ namespace Services
             try
             {
                 Session.AsHost().SetProperty("state", new SessionProperty("starting", VisibilityPropertyOptions.Member));
-                await Session.SaveCurrentPlayerDataAsync();
+                await Session.AsHost().SavePropertiesAsync();
                 SceneManager.LoadScene("Game");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Failed to start game with error {e.Message}");
+                Debug.LogError($"Failed to start game with error {e.Message}");
             }
         }
 
@@ -145,7 +179,7 @@ namespace Services
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error leaving lobby with error {e.Message}");
+                Debug.LogError($"Error leaving lobby with error {e.Message}");
             }
             finally
             {
@@ -173,18 +207,6 @@ namespace Services
         
         private void ClearSession()
         {
-            Session.PlayerJoined -= OnPlayerJoined;
-            Session.PlayerLeaving -= OnPlayerLeaving;
-            Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-            Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
-            Session.SessionHostChanged -= OnSessionHostChanged;
-            
-            _isInitialized = false;
-            Session = null;
-        }
-        
-        private void OnDestroy()
-        {
             if (Session == null)
                 return;
             
@@ -193,6 +215,28 @@ namespace Services
             Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
             Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
             Session.SessionHostChanged -= OnSessionHostChanged;
+            Session.RemovedFromSession -= OnRemovedFromSession;
+            
+            _isInitialized = false;
+            Session = null;
+        }
+        
+        private void OnDestroy()
+        {
+            if (Session != null)
+            {
+                Session.PlayerJoined -= OnPlayerJoined;
+                Session.PlayerLeaving -= OnPlayerLeaving;
+                Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+                Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
+                Session.SessionHostChanged -= OnSessionHostChanged;
+                Session.RemovedFromSession -= OnRemovedFromSession;
+            }
+
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
     }
 }
