@@ -14,7 +14,6 @@ namespace Services
         public event Action<string> PlayerLeaving;
         public event Action<List<LobbyPlayer>> PlayerPropertiesChanged;
         public event Action OnServicesInitialized;
-        public event Action OnChangeHostStartEnabled;
         public event Action OnLeaveLobby;
         
         private bool _isInitialized;
@@ -103,22 +102,9 @@ namespace Services
             }
         }
         
-        private void OnSessionHostChanged(string newHostId)
+        private void OnSessionHostChanged(string _)
         {
-            if (!Session.IsHost)
-                return;
-            
-            var readyCounter = 0;
-            foreach (var player in Session.Players)
-            {
-                if (player.Properties.TryGetValue("ready", out var isReady) && isReady.Value == "1")
-                    readyCounter++;
-            }
-
-            if (readyCounter == Session.Players.Count)
-            {
-                OnChangeHostStartEnabled?.Invoke();
-            }
+            OnPlayerPropertyChanged();
         }
         
         private void OnRemovedFromSession()

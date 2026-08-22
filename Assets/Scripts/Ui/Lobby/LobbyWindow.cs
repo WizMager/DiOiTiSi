@@ -50,7 +50,6 @@ namespace Ui.Lobby
             SessionService.Instance.PlayerJoined += OnPlayerJoined;
             SessionService.Instance.PlayerLeaving += OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged += OnPlayerPropertyChanged;
-            SessionService.Instance.OnChangeHostStartEnabled += OnChangeHostStartEnabled;
             SessionService.Instance.OnLeaveLobby += OnLeaveLobby;
             
             OnPlayerPropertyChanged(SessionService.Instance.GetLobbyPlayers());
@@ -127,15 +126,9 @@ namespace Ui.Lobby
                 }
             }
 
-            if (SessionService.Instance.Session.IsHost)
-                _startGameButton.gameObject.SetActive(readyCounter == players.Count);
+            _startGameButton.gameObject.SetActive(SessionService.Instance.Session.IsHost && readyCounter == players.Count);
         }
 
-        private void OnChangeHostStartEnabled()
-        {
-            OnPlayerPropertyChanged(SessionService.Instance.GetLobbyPlayers());
-        }
-        
         private void OnLeaveLobby()
         {
             _uiService.CloseWindow(ELobbyWindow.LobbyWindow);
@@ -155,7 +148,7 @@ namespace Ui.Lobby
             SessionService.Instance.PlayerJoined -= OnPlayerJoined;
             SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-            SessionService.Instance.OnChangeHostStartEnabled -= OnChangeHostStartEnabled;
+            SessionService.Instance.OnLeaveLobby -= OnLeaveLobby;
 
             foreach (var (_, playerItem) in _players)
             {
@@ -169,7 +162,7 @@ namespace Ui.Lobby
             SessionService.Instance.PlayerJoined -= OnPlayerJoined;
             SessionService.Instance.PlayerLeaving -= OnPlayerLeaving;
             SessionService.Instance.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-            SessionService.Instance.OnChangeHostStartEnabled -= OnChangeHostStartEnabled;
+            SessionService.Instance.OnLeaveLobby -= OnLeaveLobby;
         }
     }
 }
