@@ -218,53 +218,11 @@ namespace Services
         
         private void OnDestroy()
         {
-            if (_isDebugStart)
-            {
-                CloseSessionOnTeardown();
-            }
-            else
-            {
-                if (Session != null)
-                {
-                    Session.PlayerJoined -= OnPlayerJoined;
-                    Session.PlayerHasLeft -= OnPlayerLeaving;
-                    Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-                    Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
-                    Session.SessionHostChanged -= OnSessionHostChanged;
-                    Session.RemovedFromSession -= OnRemovedFromSession;
-                }
-            }
+            ClearSession();
             
-
             if (Instance == this)
             {
                 Instance = null;
-            }
-        }
-
-        private async void CloseSessionOnTeardown()
-        {
-            try
-            {
-                var session = Session;
-                
-                if (session == null)
-                    return;
-                
-                ClearSession();
-                
-                if (session.IsHost)
-                {
-                    await session.AsHost().DeleteAsync();
-                }
-                else
-                {
-                    await session.LeaveAsync();
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
             }
         }
     }
