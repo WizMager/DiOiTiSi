@@ -4374,6 +4374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28a3148011af4c36acc7d18f7e892a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Services.SessionService
+  _isDebugStart: 1
 --- !u!4 &1791217311
 Transform:
   m_ObjectHideFlags: 0

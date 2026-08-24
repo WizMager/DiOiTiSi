@@ -16,6 +16,8 @@ namespace Services
         public event Action<List<LobbyPlayer>> PlayerPropertiesChanged;
         public event Action OnServicesInitialized;
         public event Action OnLeaveLobby;
+
+        [SerializeField] private bool _isDebugStart;
         
         private bool _isInitialized;
         
@@ -176,6 +178,19 @@ namespace Services
 
                 if (!AuthenticationService.Instance.IsSignedIn)
                     await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+                if (_isDebugStart)
+                {
+                    var session = await MultiplayerService.Instance.CreateOrJoinSessionAsync("dioitisi-debug", new SessionOptions
+                    {
+                        MaxPlayers = 2,
+                        Name = "debug"
+                    }.WithRelayNetwork());
+                    
+                    SetSession(session);
+                    SceneManager.LoadScene("Game");
+                    return;
+                }
                 
                 OnServicesInitialized?.Invoke();
             }
@@ -203,19 +218,53 @@ namespace Services
         
         private void OnDestroy()
         {
-            if (Session != null)
+            if (_isDebugStart)
             {
-                Session.PlayerJoined -= OnPlayerJoined;
-                Session.PlayerHasLeft -= OnPlayerLeaving;
-                Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
-                Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
-                Session.SessionHostChanged -= OnSessionHostChanged;
-                Session.RemovedFromSession -= OnRemovedFromSession;
+                CloseSessionOnTeardown();
             }
+            else
+            {
+                if (Session != null)
+                {
+                    Session.PlayerJoined -= OnPlayerJoined;
+                    Session.PlayerHasLeft -= OnPlayerLeaving;
+                    Session.PlayerPropertiesChanged -= OnPlayerPropertyChanged;
+                    Session.SessionPropertiesChanged -= OnSessionPropertyChanged;
+                    Session.SessionHostChanged -= OnSessionHostChanged;
+                    Session.RemovedFromSession -= OnRemovedFromSession;
+                }
+            }
+            
 
             if (Instance == this)
             {
                 Instance = null;
+            }
+        }
+
+        private async void CloseSessionOnTeardown()
+        {
+            try
+            {
+                var session = Session;
+                
+                if (session == null)
+                    return;
+                
+                ClearSession();
+                
+                if (session.IsHost)
+                {
+                    await session.AsHost().DeleteAsync();
+                }
+                else
+                {
+                    await session.LeaveAsync();
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
             }
         }
     }
