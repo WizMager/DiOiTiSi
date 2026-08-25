@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.Entities;
+using Unity.NetCode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
@@ -89,7 +91,7 @@ namespace Services
                 playersInfoList.Add(new LobbyPlayer
                 {
                     Id = player.Id,
-                    Nickname = nickname?.Value ?? $"Player{player.Id}",
+                    Nickname = nickname?.Value ?? $"Player {playersInfoList.Count + 1}",
                     IsReady = isReady?.Value == "1"
                 });
             }
@@ -99,8 +101,12 @@ namespace Services
 
         private void OnSessionPropertyChanged()
         {
+            if (Session.IsHost)
+                return;
+            
             if (Session.Properties.TryGetValue("state", out var state) && state.Value == "starting")
             {
+                SwitchDefaultWorld();
                 SceneManager.LoadScene("Game");
             }
         }
@@ -150,6 +156,7 @@ namespace Services
         {
             Session.AsHost().SetProperty("state", new SessionProperty("starting", VisibilityPropertyOptions.Member));
             await Session.AsHost().SavePropertiesAsync();
+            SwitchDefaultWorld();
             SceneManager.LoadScene("Game");
         }
 
@@ -198,6 +205,27 @@ namespace Services
             {
                 Debug.LogError($"Failed to initialize services with error {e.Message}");
             }
+        }
+
+        private void SwitchDefaultWorld()
+        {
+            var clientWorld = ClientServerBootstrap.ClientWorld;
+            if (clientWorld == null || !clientWorld.IsCreated)
+            {
+                Debug.LogError($"Client world {clientWorld} is not created or null");
+                return;
+            }
+
+            var defaultWorld = World.DefaultGameObjectInjectionWorld;
+            if (defaultWorld != null
+                && defaultWorld.IsCreated
+                && defaultWorld != clientWorld
+                && defaultWorld != ClientServerBootstrap.ServerWorld)
+            {
+                defaultWorld.Dispose();
+            }
+            
+            World.DefaultGameObjectInjectionWorld = clientWorld;
         }
         
         private void ClearSession()
