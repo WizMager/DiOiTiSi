@@ -1,4 +1,5 @@
-﻿using Netcode.Components;
+﻿using Gameplay.Components;
+using Netcode.Components;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -13,6 +14,7 @@ namespace Netcode.Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<NetworkId>();
+            state.RequireForUpdate<PlayerPrefabComponent>();
         }
 
         [BurstCompile]

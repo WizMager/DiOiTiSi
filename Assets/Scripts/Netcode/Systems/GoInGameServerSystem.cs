@@ -3,7 +3,10 @@ using Netcode.Components;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
+using Unity.Transforms;
 
 namespace Netcode.Systems
 {
@@ -30,6 +33,12 @@ namespace Netcode.Systems
                 ecb.AddComponent<NetworkStreamInGame>(connection);
 
                 var playerEntity = state.EntityManager.Instantiate(playerPrefab);
+                ecb.SetComponent(playerEntity, LocalTransform.FromPosition(0, 1.5f, 0));
+                ecb.SetComponent(playerEntity, new PhysicsVelocity
+                {
+                    Linear = float3.zero,
+                    Angular = float3.zero,
+                });
                 ecb.SetComponent(playerEntity, new GhostOwner
                 {
                     NetworkId = networkId.Value
