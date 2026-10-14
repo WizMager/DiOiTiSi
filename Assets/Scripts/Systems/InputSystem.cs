@@ -14,6 +14,8 @@ namespace Systems
 
         protected override void OnCreate()
         {
+            RequireForUpdate<CameraComponent>();
+
             var actions = UnityEngine.InputSystem.InputSystem.actions;
             actions.Enable();
 
@@ -25,10 +27,16 @@ namespace Systems
 
         protected override void OnUpdate()
         {
+            var camera = SystemAPI.GetSingleton<CameraComponent>().Value.Value;
+            var crosshairPosition = _crosshair.ReadValue<Vector2>();
+            var aimRay = camera.ScreenPointToRay(crosshairPosition);
+
             foreach (var input in SystemAPI.Query<RefRW<InputComponent>>().WithAll<PlayerTag>())
             {
                 input.ValueRW.MoveDirection = _move.ReadValue<Vector2>();
-                input.ValueRW.CrosshairPosition = _crosshair.ReadValue<Vector2>();
+                input.ValueRW.CrosshairPosition = crosshairPosition;
+                input.ValueRW.AimRayStart = aimRay.origin;
+                input.ValueRW.AimRayEnd = aimRay.origin + aimRay.direction * 100f;
                 input.ValueRW.Attack |= _attack.WasPressedThisFrame();
                 input.ValueRW.LevelUpMenu |= _levelUpMenu.WasPressedThisFrame();
             }
