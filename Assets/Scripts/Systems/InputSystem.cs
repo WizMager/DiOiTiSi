@@ -34,10 +34,9 @@ namespace Systems
             foreach (var input in SystemAPI.Query<RefRW<InputComponent>>().WithAll<PlayerTag>())
             {
                 input.ValueRW.MoveDirection = _move.ReadValue<Vector2>();
-                input.ValueRW.CrosshairPosition = crosshairPosition;
                 input.ValueRW.AimRayStart = aimRay.origin;
                 input.ValueRW.AimRayEnd = aimRay.origin + aimRay.direction * 100f;
-                input.ValueRW.Attack |= _attack.WasPressedThisFrame();
+                input.ValueRW.Attack = _attack.IsPressed();
                 input.ValueRW.LevelUpMenu |= _levelUpMenu.WasPressedThisFrame();
             }
         }
