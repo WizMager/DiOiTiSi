@@ -8,6 +8,7 @@ namespace Authoring
     {
         public float moveSpeed = 10f;
         public float shootCooldown = 0.5f;
+        public float health = 100f;
         
         public Transform shootPoint;
 
@@ -27,10 +28,15 @@ namespace Authoring
                 {
                     Value = GetEntity(authoring.shootPoint, TransformUsageFlags.Dynamic)
                 });
-                AddComponent(entity, new ShootCooldownComponent
+                AddComponent(entity, new AttackCooldownComponent
                 {
                     CurrentTime = 0,
                     Cooldown = authoring.shootCooldown
+                });
+                AddBuffer<DamageBuffer>(entity);
+                AddComponent(entity, new HealthComponent
+                {
+                    Value = authoring.health
                 });
             }
         }

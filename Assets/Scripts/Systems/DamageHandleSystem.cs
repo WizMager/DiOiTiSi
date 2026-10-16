@@ -1,0 +1,45 @@
+﻿using Components;
+using Unity.Burst;
+using Unity.Entities;
+
+namespace Systems
+{
+    public partial struct DamageHandleSystem : ISystem
+    {
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+        }
+
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
+                .CreateCommandBuffer(state.WorldUnmanaged);
+            
+            foreach (var (damageBuffer, health, entity) 
+                     in SystemAPI.Query<DynamicBuffer<DamageBuffer>, RefRW<HealthComponent>>().WithEntityAccess())
+            {
+                if (damageBuffer.IsEmpty)
+                    continue;
+
+                var damage = 0f;
+                
+                foreach (var damageValue in damageBuffer)
+                {
+                    damage += damageValue.Value;
+                }
+                
+                damageBuffer.Clear();
+
+                health.ValueRW.Value -= damage;
+
+                if (health.ValueRO.Value > 0)
+                    continue;
+                
+                ecb.DestroyEntity(entity);
+            }
+        }
+    }
+}

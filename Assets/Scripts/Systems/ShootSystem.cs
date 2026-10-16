@@ -26,7 +26,7 @@ namespace Systems
                 .CreateCommandBuffer(state.WorldUnmanaged);
             
             foreach (var (shootCooldown, shootPoint, input) 
-                     in SystemAPI.Query<RefRW<ShootCooldownComponent>, RefRO<ShootPointComponent>, RefRW<InputComponent>>().WithAll<PlayerTag>())
+                     in SystemAPI.Query<RefRW<AttackCooldownComponent>, RefRO<ShootPointComponent>, RefRW<InputComponent>>().WithAll<PlayerTag>())
             {
                 if (shootCooldown.ValueRO.CurrentTime > 0)
                 {
@@ -59,6 +59,11 @@ namespace Systems
                 ecb.SetComponent(projectile, new PhysicsVelocity
                 {
                     Linear = math.forward(shootTransform.Rotation) * 10f
+                });
+                ecb.AddComponent<ProjectileTag>(projectile);
+                ecb.AddComponent(projectile, new DamageComponent
+                {
+                    Value = 25
                 });
             }
         }

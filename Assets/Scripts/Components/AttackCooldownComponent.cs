@@ -2,7 +2,7 @@
 
 namespace Components
 {
-    public struct ShootCooldownComponent : IComponentData
+    public struct AttackCooldownComponent : IComponentData
     {
         public float CurrentTime;
         public float Cooldown;
