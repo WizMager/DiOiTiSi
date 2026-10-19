@@ -6,7 +6,7 @@ using Unity.Transforms;
 
 namespace Systems
 {
-    public partial struct StubEnemySpawnSystem : ISystem
+    public partial struct EnemySpawnSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -23,13 +23,13 @@ namespace Systems
             foreach (var (cooldown, enemyPrefab, randomComponent) 
                      in SystemAPI.Query<RefRW<EnemySpawnCooldownComponent>, RefRO<EnemyPrefabComponent>, RefRW<RandomComponent>>())
             {
-                if (cooldown.ValueRO.Value > 0)
+                if (cooldown.ValueRO.CurrentTime > 0)
                 {
-                    cooldown.ValueRW.Value -= SystemAPI.Time.DeltaTime;
+                    cooldown.ValueRW.CurrentTime -= SystemAPI.Time.DeltaTime;
                 }
                 else
                 {
-                    cooldown.ValueRW.Value = 5;
+                    cooldown.ValueRW.CurrentTime = cooldown.ValueRO.Cooldown;
 
                     var enemyEntity = ecb.Instantiate(enemyPrefab.ValueRO.Value);
                     var random = randomComponent.ValueRW.Value;

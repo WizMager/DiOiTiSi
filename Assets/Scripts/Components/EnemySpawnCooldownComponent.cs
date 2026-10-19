@@ -4,6 +4,7 @@ namespace Components
 {
     public struct EnemySpawnCooldownComponent : IComponentData
     {
-        public float Value;
+        public float Cooldown;
+        public float CurrentTime;
     }
 }

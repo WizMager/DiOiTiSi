@@ -370,7 +370,7 @@ GameObject:
   - component: {fileID: 755405719}
   - component: {fileID: 755405720}
   m_Layer: 0
-  m_Name: PlayerPrefab
+  m_Name: PlayerPrefabAuhoring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415,7 +415,7 @@ GameObject:
   - component: {fileID: 761708960}
   - component: {fileID: 761708961}
   m_Layer: 0
-  m_Name: ProjectilePrefab
+  m_Name: ProjectilePrefabAuthoring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -460,7 +460,7 @@ GameObject:
   - component: {fileID: 1162564098}
   - component: {fileID: 1162564099}
   m_Layer: 0
-  m_Name: EnemyPrefab
+  m_Name: EnemySpawnAuthoring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -493,7 +493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f98a4a4f96384fedadbdca9ee3dc2761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Authoring.EnemyPrefabAuthoring
-  enemyPrefab: {fileID: 3895448994044608764, guid: 27edf997cd82af044b0111341495d9ae, type: 3}
+  enemySpawnData: {fileID: 11400000, guid: 2bd2736145fbda341bbef7f9e661e4d6, type: 2}
 --- !u!1 &2005520519
 GameObject:
   m_ObjectHideFlags: 0
