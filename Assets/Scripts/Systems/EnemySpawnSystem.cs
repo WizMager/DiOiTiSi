@@ -20,8 +20,8 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             
-            foreach (var (cooldown, enemyPrefab, randomComponent) 
-                     in SystemAPI.Query<RefRW<EnemySpawnCooldownComponent>, RefRO<EnemyPrefabComponent>, RefRW<RandomComponent>>())
+            foreach (var (cooldown, enemyPrefab, randomComponent, spawnDistance) 
+                     in SystemAPI.Query<RefRW<EnemySpawnCooldownComponent>, RefRO<EnemyPrefabComponent>, RefRW<RandomComponent>, RefRO<EnemySpawnDistanceComponent>>())
             {
                 if (cooldown.ValueRO.CurrentTime > 0)
                 {
@@ -31,12 +31,53 @@ namespace Systems
                 {
                     cooldown.ValueRW.CurrentTime = cooldown.ValueRO.Cooldown;
 
-                    var enemyEntity = ecb.Instantiate(enemyPrefab.ValueRO.Value);
+                    var minX = float.MaxValue;
+                    var maxX = float.MinValue;
+                    var minZ = float.MaxValue;
+                    var maxZ = float.MinValue;
+                    
+                    foreach (var localTransform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<PlayerTag>())
+                    {
+                        var playerPosition = localTransform.ValueRO.Position;
+                        minX = math.min(minX, playerPosition.x);
+                        maxX = math.max(maxX, playerPosition.x);
+                        minZ = math.min(minZ, playerPosition.z);
+                        maxZ = math.max(maxZ, playerPosition.z);
+                    }
+
+                    var distanceX = spawnDistance.ValueRO.SingleEnemyLeftRightDistance;
+                    var distanceZ = spawnDistance.ValueRO.SingleEnemyTopBottomDistance;
+
+                    minX -= distanceX;
+                    maxX += distanceX;
+                    minZ -= distanceZ;
+                    maxZ += distanceZ;
+                    
+                    var width = maxX - minX;
+                    var height = maxZ - minZ;
+                    var perimeter = 2f * (width + height);
                     var random = randomComponent.ValueRW.Value;
-                    var dir = random.NextFloat2Direction();
-                    var r = 5 * math.sqrt(random.NextFloat());
+                    var randomDotInOnPerimeter = random.NextFloat() * perimeter;
                     randomComponent.ValueRW.Value = random;
-                    var position = new float3(dir.x * r, 0f, dir.y * r);
+
+                    float3 position;
+                    if (randomDotInOnPerimeter < width)
+                    {
+                        position = new float3(minX + randomDotInOnPerimeter, 0, minZ);
+                    } else if ((randomDotInOnPerimeter -= width) < height)
+                    {
+                        position = new float3(maxX, 0, minZ + randomDotInOnPerimeter);
+                    }else if ((randomDotInOnPerimeter -= height) < width)
+                    {
+                        position = new float3(maxX - randomDotInOnPerimeter, 0, maxZ);
+                    }
+                    else
+                    {
+                        randomDotInOnPerimeter -= width;
+                        position = new float3(minX, 0, maxZ - randomDotInOnPerimeter);
+                    }
+                    
+                    var enemyEntity = ecb.Instantiate(enemyPrefab.ValueRO.Value);
                     
                     ecb.SetComponent(enemyEntity, new LocalTransform
                     {

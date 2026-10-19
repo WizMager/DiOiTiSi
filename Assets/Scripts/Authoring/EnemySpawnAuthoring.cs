@@ -21,7 +21,6 @@ namespace Authoring
                 {
                     Value = GetEntity(authoring.enemySpawnData.GetEnemy(EEnemyType.Melee), TransformUsageFlags.Dynamic)
                 });
-                
                 AddComponent(entity, new EnemySpawnCooldownComponent
                 {
                     Cooldown = authoring.enemySpawnData.SingleEnemySpawnCooldown,
@@ -30,6 +29,13 @@ namespace Authoring
                 AddComponent(entity, new RandomComponent
                 {
                     Value = Random.CreateFromIndex((uint)authoring.GetHashCode()),
+                });
+                AddComponent(entity, new EnemySpawnDistanceComponent
+                {
+                    SingleEnemyLeftRightDistance = authoring.enemySpawnData.SingleEnemyLeftRightDistance,
+                    SingleEnemyTopBottomDistance = authoring.enemySpawnData.SingleEnemyTopBottomDistance,
+                    SpawnerLeftRightDistance = authoring.enemySpawnData.SpawnerLeftRightDistance,
+                    SpawnerTopBottomDistance = authoring.enemySpawnData.SpawnerTopBottomDistance
                 });
             }
         }
