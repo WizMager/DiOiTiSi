@@ -8,6 +8,7 @@ using Unity.Transforms;
 namespace Systems
 {
     [UpdateAfter(typeof(InputSystem))]
+    [UpdateAfter(typeof(CooldownCounterSystem))]
     public partial struct ShootSystem : ISystem
     {
         [BurstCompile]
@@ -25,23 +26,16 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             
-            foreach (var (shootCooldown, shootPoint, input) 
-                     in SystemAPI.Query<RefRW<AttackCooldownComponent>, RefRO<ShootPointComponent>, RefRW<InputComponent>>().WithAll<PlayerTag>())
+            foreach (var (shootCooldown, shootPoint, input, canAttack) 
+                     in SystemAPI.Query<RefRW<AttackCooldownComponent>, RefRO<ShootPointComponent>, RefRW<InputComponent>, EnabledRefRW<CanAttackTag>>().WithAll<PlayerTag>())
             {
-                if (shootCooldown.ValueRO.CurrentTime > 0)
-                {
-                    shootCooldown.ValueRW.CurrentTime = math.max(0, shootCooldown.ValueRW.CurrentTime - SystemAPI.Time.DeltaTime);
-                }
-                
                 if (!input.ValueRO.Attack)
                 {
                     continue;
                 }
                 
                 input.ValueRW.Attack = false;
-                
-                if (shootCooldown.ValueRO.CurrentTime > 0)
-                    continue;
+                canAttack.ValueRW = false;
                 
                 var shootTransform = SystemAPI.GetComponent<LocalToWorld>(shootPoint.ValueRO.Value);
                 shootCooldown.ValueRW.CurrentTime = shootCooldown.ValueRO.Cooldown;

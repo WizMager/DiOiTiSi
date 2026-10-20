@@ -457,8 +457,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Authoring.EnemyAuthoring
   heath: 50
-  speed: 10
+  speed: 12
   attackCooldown: 1
+  attackDistance: 2
 --- !u!1 &5974844107312151246
 GameObject:
   m_ObjectHideFlags: 0

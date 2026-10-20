@@ -7,8 +7,10 @@ namespace Authoring
     public class EnemyAuthoring : MonoBehaviour
     {
         public float heath = 50f;
-        public float speed = 10f;
+        public float speed = 12f;
         public float attackCooldown = 1f;
+        public float attackDistance = 2f;
+        public float damage = 10f;
         
         private class EnemyAuthoringBaker : Baker<EnemyAuthoring>
         {
@@ -30,6 +32,17 @@ namespace Authoring
                 {
                     CurrentTime = 0,
                     Cooldown = authoring.attackCooldown
+                });
+                AddComponent(entity, new AttackDistanceComponent
+                {
+                    Value = authoring.attackDistance
+                });
+                AddComponent<AttackTargetComponent>(entity);
+                SetComponentEnabled<AttackTargetComponent>(entity,false);
+                AddComponent<CanAttackTag>(entity);
+                AddComponent(entity, new DamageComponent
+                {
+                    Value = authoring.damage
                 });
             }
         }
