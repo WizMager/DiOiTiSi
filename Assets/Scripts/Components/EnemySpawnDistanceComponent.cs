@@ -4,9 +4,7 @@ namespace Components
 {
     public struct EnemySpawnDistanceComponent : IComponentData
     {
-        public float SingleEnemyLeftRightDistance;
-        public float SingleEnemyTopBottomDistance;
-        public float SpawnerLeftRightDistance;
-        public float SpawnerTopBottomDistance;
+        public float LeftRightDistance;
+        public float TopBottomDistance;
     }
 }

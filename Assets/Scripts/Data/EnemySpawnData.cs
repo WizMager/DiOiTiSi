@@ -9,13 +9,18 @@ namespace Data
     [CreateAssetMenu(fileName = nameof(EnemySpawnData), menuName = "Parameters/" + nameof(EnemySpawnData))]
     public class EnemySpawnData : ScriptableObject
     {
+        [Header("Enemies:")]
         [SerializeField] private float _singleEnemySpawnCooldown;
-        [SerializeField] private float _enemySpawnerSpawnCooldown;
         [SerializeField] private List<EnemyPrefabDo> _enemies;
         [SerializeField] private float _singleEnemyLeftRightDistance;
         [SerializeField] private float _singleEnemyTopBottomDistance;
+        
+        [Space]
+        [Header("Spawner:")]
+        [SerializeField] private float _enemySpawnerSpawnCooldown;
         [SerializeField] private float _spawnerLeftRightDistance;
         [SerializeField] private float _spawnerTopBottomDistance;
+        [SerializeField] private List<EnemySpawnerDo> _spawners;
 
         public float SingleEnemySpawnCooldown => _singleEnemySpawnCooldown;
         public float EnemySpawnerSpawnCooldown => _enemySpawnerSpawnCooldown;
@@ -23,6 +28,7 @@ namespace Data
         public float SingleEnemyTopBottomDistance => _singleEnemyTopBottomDistance;
         public float SpawnerLeftRightDistance => _spawnerLeftRightDistance;
         public float SpawnerTopBottomDistance => _spawnerTopBottomDistance;
+        public List<EnemySpawnerDo> EnemySpawners => _spawners;
 
         public GameObject GetEnemy(EEnemyType enemyType)
         {
