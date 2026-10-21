@@ -6,7 +6,7 @@ using Unity.Transforms;
 
 namespace Systems
 {
-    public partial struct EnemySpawnSystem : ISystem
+    public partial struct EnemyGlobalSpawnSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -20,8 +20,9 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             
-            foreach (var (cooldown, enemyPrefab, randomComponent, spawnDistance, canSpawn) 
-                     in SystemAPI.Query<RefRW<EnemySpawnCooldownComponent>, RefRO<EnemyPrefabComponent>, RefRW<RandomComponent>, RefRO<EnemySpawnDistanceComponent>, EnabledRefRW<CanSpawnTag>>())
+            foreach (var (cooldown, enemyPrefabs, randomComponent, spawnDistance, canSpawn) 
+                     in SystemAPI.Query<RefRW<EnemySpawnCooldownComponent>, DynamicBuffer<EnemyPrefabBuffer>, RefRW<RandomComponent>, RefRO<EnemySpawnDistanceComponent>, EnabledRefRW<CanSpawnTag>>()
+                         .WithAny<SpawnerOfSpawnerTag, SingleEnemySpawnerTag>())
             {
                 cooldown.ValueRW.CurrentTime = cooldown.ValueRO.Cooldown;
                 canSpawn.ValueRW = false;
@@ -53,7 +54,7 @@ namespace Systems
                 var perimeter = 2f * (width + height);
                 var random = randomComponent.ValueRW.Value;
                 var randomDotInOnPerimeter = random.NextFloat() * perimeter;
-                randomComponent.ValueRW.Value = random;
+                
 
                 float3 position;
                 if (randomDotInOnPerimeter < width)
@@ -74,7 +75,9 @@ namespace Systems
                     position = new float3(minX, 0, maxZ - randomDotInOnPerimeter);
                 }
 
-                var enemyEntity = ecb.Instantiate(enemyPrefab.ValueRO.Value);
+                var randomEnemyIndex = random.NextInt(0, enemyPrefabs.Length);
+                randomComponent.ValueRW.Value = random;
+                var enemyEntity = ecb.Instantiate(enemyPrefabs[randomEnemyIndex].Prefab);
 
                 ecb.SetComponent(enemyEntity, new LocalTransform
                 {

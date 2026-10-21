@@ -1,5 +1,4 @@
 ﻿using System;
-using Enums;
 using UnityEngine;
 
 namespace Data.DataObject
@@ -7,7 +6,7 @@ namespace Data.DataObject
     [Serializable]
     public struct EnemyPrefabDo
     {
-        public EEnemyType enemyType;
+        public float weight;
         public GameObject prefab;
     }
 }

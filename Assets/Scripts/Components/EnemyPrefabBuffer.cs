@@ -2,7 +2,7 @@
 
 namespace Components
 {
-    public struct EnemiesInSpawnersComponent : IBufferElementData
+    public struct EnemyPrefabBuffer : IBufferElementData
     {
         public float Weight;
         public Entity Prefab;

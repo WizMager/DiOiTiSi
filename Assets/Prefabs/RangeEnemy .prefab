@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: -9082489590918693223}
   - component: {fileID: 5419642815701689036}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: 'RangeEnemy '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -460,6 +460,7 @@ MonoBehaviour:
   speed: 12
   attackCooldown: 1
   attackDistance: 2
+  damage: 10
 --- !u!1 &5974844107312151246
 GameObject:
   m_ObjectHideFlags: 0

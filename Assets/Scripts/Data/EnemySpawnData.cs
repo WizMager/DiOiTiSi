@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Data.DataObject;
-using Enums;
 using UnityEngine;
 
 namespace Data
@@ -20,27 +18,15 @@ namespace Data
         [SerializeField] private float _enemySpawnerSpawnCooldown;
         [SerializeField] private float _spawnerLeftRightDistance;
         [SerializeField] private float _spawnerTopBottomDistance;
-        [SerializeField] private List<EnemySpawnerDo> _spawners;
+        [SerializeField] private List<EnemyPrefabDo> _spawners;
 
         public float SingleEnemySpawnCooldown => _singleEnemySpawnCooldown;
+        public List<EnemyPrefabDo> Enemies => _enemies;
         public float EnemySpawnerSpawnCooldown => _enemySpawnerSpawnCooldown;
         public float SingleEnemyLeftRightDistance => _singleEnemyLeftRightDistance;
         public float SingleEnemyTopBottomDistance => _singleEnemyTopBottomDistance;
         public float SpawnerLeftRightDistance => _spawnerLeftRightDistance;
         public float SpawnerTopBottomDistance => _spawnerTopBottomDistance;
-        public List<EnemySpawnerDo> EnemySpawners => _spawners;
-
-        public GameObject GetEnemy(EEnemyType enemyType)
-        {
-            foreach (var enemyPrefabDo in _enemies)
-            {
-                if (enemyPrefabDo.enemyType != enemyType)
-                    continue;
-
-                return enemyPrefabDo.prefab;
-            }
-
-            throw new Exception($"[{nameof(EnemySpawnData)}]: There is not value with key {enemyType}");
-        }
+        public List<EnemyPrefabDo> EnemySpawners => _spawners;
     }
 }

@@ -14,15 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Data.EnemySpawnData
   _singleEnemySpawnCooldown: 5
   _enemies:
-  - enemyType: 1
+  - weight: 30
+    prefab: {fileID: 3895448994044608764, guid: 05471201e2c769b4ebec7a45e0e44e8f, type: 3}
+  - weight: 50
     prefab: {fileID: 3895448994044608764, guid: 27edf997cd82af044b0111341495d9ae, type: 3}
   _singleEnemyLeftRightDistance: 15
   _singleEnemyTopBottomDistance: 10
-  _enemySpawnerSpawnCooldown: 20
+  _enemySpawnerSpawnCooldown: 3
   _spawnerLeftRightDistance: 12
   _spawnerTopBottomDistance: 6
   _spawners:
-  - spawnCooldown: 7
-    enemies:
-    - weight: 50
-      enemyPrefab: {fileID: 3895448994044608764, guid: 27edf997cd82af044b0111341495d9ae, type: 3}
+  - weight: 50
+    prefab: {fileID: 3895448994044608764, guid: 7875f3ea32b0169488c59800391d3a8d, type: 3}
+  - weight: 10
+    prefab: {fileID: 2959917831701456256, guid: 707cb7739545ad94985c2edc90af6cf2, type: 3}

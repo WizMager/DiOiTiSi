@@ -24,18 +24,18 @@ namespace Systems
             state.Dependency = new ProjectileTriggerJob
             {
                 ProjectileLookup = SystemAPI.GetComponentLookup<ProjectileTag>(true),
-                EnemyLookup = SystemAPI.GetComponentLookup<EnemyTag>(true),
+                EnemyLookup = SystemAPI.GetBufferLookup<DamageBuffer>(true),
                 DamageLookup = SystemAPI.GetComponentLookup<DamageComponent>(true),
                 Ecb = SystemAPI.GetSingleton<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>()
                     .CreateCommandBuffer(state.WorldUnmanaged)
                     .AsParallelWriter()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
         }
-        
-        public struct ProjectileTriggerJob : ITriggerEventsJob
+
+        private struct ProjectileTriggerJob : ITriggerEventsJob
         {
             [ReadOnly] public ComponentLookup<ProjectileTag> ProjectileLookup;
-            [ReadOnly] public ComponentLookup<EnemyTag> EnemyLookup;
+            [ReadOnly] public BufferLookup<DamageBuffer> EnemyLookup;
             [ReadOnly] public ComponentLookup<DamageComponent> DamageLookup;
             
             public EntityCommandBuffer.ParallelWriter Ecb;
@@ -53,7 +53,7 @@ namespace Systems
                 
                 Ecb.DestroyEntity(projectile.Index, projectile);
                 
-                if (!EnemyLookup.HasComponent(other))
+                if (!EnemyLookup.HasBuffer(other))
                     return;
                 
                 Ecb.AppendToBuffer(other.Index, other, new DamageBuffer
