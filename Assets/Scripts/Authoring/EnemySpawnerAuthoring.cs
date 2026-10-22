@@ -3,6 +3,7 @@ using Components;
 using Data.DataObject;
 using Unity.Entities;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace Authoring
 {
@@ -26,6 +27,10 @@ namespace Authoring
                 AddComponent(entity, new HealthComponent
                 {
                     Value = authoring.health
+                });
+                AddComponent(entity, new RandomComponent
+                {
+                    Value = Random.CreateFromIndex((uint)entity.Index)
                 });
                 AddComponent<CanSpawnTag>(entity);
                 SetComponentEnabled<CanSpawnTag>(entity, false);
