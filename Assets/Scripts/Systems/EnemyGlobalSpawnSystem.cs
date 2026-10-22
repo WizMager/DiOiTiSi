@@ -75,9 +75,29 @@ namespace Systems
                     position = new float3(minX, 0, maxZ - randomDotInOnPerimeter);
                 }
 
-                var randomEnemyIndex = random.NextInt(0, enemyPrefabs.Length);
+                var tempWeight = 0f;
+                foreach (var enemyPrefab in enemyPrefabs)
+                {
+                    tempWeight += enemyPrefab.Weight;
+                }
+                
+                var pickWeight = random.NextFloat() * tempWeight;
                 randomComponent.ValueRW.Value = random;
-                var enemyEntity = ecb.Instantiate(enemyPrefabs[randomEnemyIndex].Prefab);
+                tempWeight = 0;
+                var choseIndex = 0;
+
+                for (var i = 0; i < enemyPrefabs.Length; i++)
+                {
+                    tempWeight += enemyPrefabs[i].Weight;
+
+                    if (pickWeight > tempWeight) 
+                        continue;
+                    
+                    choseIndex = i;
+                    break;
+                }
+                
+                var enemyEntity = ecb.Instantiate(enemyPrefabs[choseIndex].Prefab);
 
                 ecb.SetComponent(enemyEntity, new LocalTransform
                 {
