@@ -11,6 +11,7 @@ namespace Authoring
         public float attackCooldown = 1f;
         public float attackDistance = 2f;
         public float damage = 10f;
+        public float experienceDrop = 25;
         
         private class EnemyAuthoringBaker : Baker<EnemyAuthoring>
         {
@@ -43,6 +44,10 @@ namespace Authoring
                 AddComponent(entity, new DamageComponent
                 {
                     Value = authoring.damage
+                });
+                AddComponent(entity, new ExperienceDropComponent
+                {
+                    Value = authoring.experienceDrop
                 });
             }
         }

@@ -12,6 +12,7 @@ namespace Authoring
         public List<EnemyPrefabDo> enemies;
         public float spawnCooldown = 7;
         public float health = 100;
+        public float experienceDrop = 50;
         
         private class EnemySpawnerAuthoringBaker : Baker<EnemySpawnerAuthoring>
         {
@@ -35,6 +36,10 @@ namespace Authoring
                 AddComponent<CanSpawnTag>(entity);
                 SetComponentEnabled<CanSpawnTag>(entity, false);
                 AddComponent<SpawnerTag>(entity);
+                AddComponent(entity, new ExperienceDropComponent
+                {
+                    Value = authoring.experienceDrop
+                });
                 AddBuffer<DamageBuffer>(entity);
 
                 var enemiesBuffer = AddBuffer<EnemyPrefabBuffer>(entity);
