@@ -4,6 +4,7 @@ using Unity.Entities;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     [UpdateBefore(typeof(DamageHandleSystem))]
     [UpdateAfter(typeof(CooldownCounterSystem))]
     [UpdateAfter(typeof(EnemyMoveSystem))]

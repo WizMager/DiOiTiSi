@@ -6,6 +6,7 @@ using Unity.Transforms;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     public partial struct EnemyGlobalSpawnSystem : ISystem
     {
         [BurstCompile]

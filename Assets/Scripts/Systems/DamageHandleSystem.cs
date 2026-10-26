@@ -4,6 +4,7 @@ using Unity.Entities;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     public partial struct DamageHandleSystem : ISystem
     {
         [BurstCompile]

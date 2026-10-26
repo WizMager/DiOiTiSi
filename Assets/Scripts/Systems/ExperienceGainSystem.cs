@@ -4,12 +4,15 @@ using Unity.Entities;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     [UpdateAfter(typeof(DamageHandleSystem))]
     public partial struct ExperienceGainSystem : ISystem
     {
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var levelUpComponent = SystemAPI.GetSingletonRW<LevelUpComponent>();
+            
             foreach (var (expBuffer, expComponent) 
                      in SystemAPI.Query<DynamicBuffer<GainExperienceBuffer>, RefRW<ExperienceComponent>>())
             {
@@ -28,6 +31,7 @@ namespace Systems
                     exp -= needExp;
                     expComponent.ValueRW.Current = exp;
                     expComponent.ValueRW.LevelUp *= 2;
+                    levelUpComponent.ValueRW.Value++;
                 }
                 else
                 {

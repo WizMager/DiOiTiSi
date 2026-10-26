@@ -7,6 +7,7 @@ using Unity.Transforms;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     public partial struct EnemyMoveSystem : ISystem
     {
         [BurstCompile]

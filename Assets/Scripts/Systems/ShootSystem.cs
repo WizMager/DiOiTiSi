@@ -7,7 +7,7 @@ using Unity.Transforms;
 
 namespace Systems
 {
-    [UpdateAfter(typeof(InputSystem))]
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     [UpdateAfter(typeof(CooldownCounterSystem))]
     public partial struct ShootSystem : ISystem
     {

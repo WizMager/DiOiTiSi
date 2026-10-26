@@ -5,6 +5,7 @@ using Unity.Mathematics;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     public partial struct CooldownCounterSystem : ISystem
     {
         [BurstCompile]

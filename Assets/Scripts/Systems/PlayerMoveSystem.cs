@@ -6,6 +6,7 @@ using Unity.Physics;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(GameplaySimulationSystemGroup))]
     public partial struct PlayerMoveSystem : ISystem
     {
         [BurstCompile]
