@@ -403,7 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aea0df043bca4e2cb4979852a9f09e56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Authoring.DropItemPrefabAuthoring
-  dropItemPrefab: {fileID: 3904622937137725147, guid: e78f28d3bf9411e4898d7ef4fee32436, type: 3}
+  dropItemPrefab: {fileID: 3904622937137725147, guid: 7921c3d4533d4b8449872aaef58758f0, type: 3}
 --- !u!1 &755405718
 GameObject:
   m_ObjectHideFlags: 0
