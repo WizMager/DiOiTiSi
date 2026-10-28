@@ -8,6 +8,11 @@ namespace Systems
     [UpdateAfter(typeof(DamageHandleSystem))]
     public partial struct ExperienceGainSystem : ISystem
     {
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<LevelUpComponent>();
+        }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {

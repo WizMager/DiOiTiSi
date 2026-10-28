@@ -12,20 +12,26 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<DropItemPrefabComponent>();
+            state.RequireForUpdate<DropItemMaterialsIdBuffer>();
         }
-
+        
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-
             var dropItemPrefab = SystemAPI.GetSingleton<DropItemPrefabComponent>();
-
             var dropItemEntity = state.EntityManager.Instantiate(dropItemPrefab.Value);
-
+            
             var dropItemComponent = SystemAPI.GetComponentRW<DropItemComponent>(dropItemEntity);
             dropItemComponent.ValueRW.ItemType = EDropItem.MoveSpeed;
+
+            var icon = dropItemComponent.ValueRO.Icon;
             var index = (int)dropItemComponent.ValueRO.ItemType - 1;
-            SystemAPI.SetComponent(dropItemComponent.ValueRO.Icon, MaterialMeshInfo.FromRenderMeshArrayIndices(index, 0));
+
+            var materialMeshInfo = SystemAPI.GetComponent<MaterialMeshInfo>(icon);
+            var dropItemMaterialIdBuffer = SystemAPI.GetSingletonBuffer<DropItemMaterialsIdBuffer>();
+            materialMeshInfo.MaterialID = dropItemMaterialIdBuffer[index].Value;
+            
+            SystemAPI.SetComponent(icon, materialMeshInfo);
 
             state.Enabled = false;
         }
