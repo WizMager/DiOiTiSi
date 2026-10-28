@@ -6,6 +6,7 @@ using Unity.Rendering;
 
 namespace Systems
 {
+    [UpdateAfter(typeof(InitializeDropItemMaterialsSystem))]
     public partial struct TestDropSpawn : ISystem
     {
         [BurstCompile]
