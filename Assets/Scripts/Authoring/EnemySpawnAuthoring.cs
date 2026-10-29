@@ -23,10 +23,8 @@ namespace Authoring
                     Cooldown = authoring.enemySpawnData.SingleEnemySpawnCooldown,
                     CurrentTime = authoring.enemySpawnData.SingleEnemySpawnCooldown
                 });
-                AddComponent(entity, new RandomComponent
-                {
-                    Value = Random.CreateFromIndex((uint)entity.Index + 1),
-                });
+                AddComponent<RandomComponent>(entity);
+                SetComponentEnabled<RandomComponent>(entity, false);
                 AddComponent(entity, new EnemySpawnDistanceComponent
                 {
                     LeftRightDistance = authoring.enemySpawnData.SingleEnemyLeftRightDistance,
@@ -57,10 +55,8 @@ namespace Authoring
                     Cooldown = authoring.enemySpawnData.EnemySpawnerSpawnCooldown,
                     CurrentTime = authoring.enemySpawnData.EnemySpawnerSpawnCooldown
                 });
-                AddComponent(spawnerOfSpawnersEntity, new RandomComponent
-                {
-                    Value = Random.CreateFromIndex((uint)spawnerOfSpawnersEntity.Index + 1),
-                });
+                AddComponent<RandomComponent>(spawnerOfSpawnersEntity);
+                SetComponentEnabled<RandomComponent>(spawnerOfSpawnersEntity, false);
                 AddComponent<SpawnerOfSpawnerTag>(spawnerOfSpawnersEntity);
                 AddComponent<CanSpawnTag>(spawnerOfSpawnersEntity);
                 SetComponentEnabled<CanSpawnTag>(spawnerOfSpawnersEntity, false);

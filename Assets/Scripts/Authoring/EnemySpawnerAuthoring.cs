@@ -29,10 +29,8 @@ namespace Authoring
                 {
                     Value = authoring.health
                 });
-                AddComponent(entity, new RandomComponent
-                {
-                    Value = Random.CreateFromIndex((uint)entity.Index)
-                });
+                AddComponent<RandomComponent>(entity);
+                SetComponentEnabled<RandomComponent>(entity, false);
                 AddComponent<CanSpawnTag>(entity);
                 SetComponentEnabled<CanSpawnTag>(entity, false);
                 AddComponent<SpawnerTag>(entity);

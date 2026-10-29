@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace Components
 {
-    public struct RandomComponent : IComponentData
+    public struct RandomComponent : IComponentData, IEnableableComponent
     {
         public Random Value;
     }

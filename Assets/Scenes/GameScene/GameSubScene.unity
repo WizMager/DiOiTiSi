@@ -404,6 +404,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Authoring.DropItemPrefabAuthoring
   dropItemPrefab: {fileID: 3904622937137725147, guid: 7921c3d4533d4b8449872aaef58758f0, type: 3}
+  dropItemsData: {fileID: 11400000, guid: c0df42a374054ab42a3858419de226e2, type: 2}
 --- !u!1 &755405718
 GameObject:
   m_ObjectHideFlags: 0
