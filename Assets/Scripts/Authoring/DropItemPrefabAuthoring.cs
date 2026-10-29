@@ -22,6 +22,7 @@ namespace Authoring
                 {
                     Value = GetEntity(prefabAuthoring.dropItemPrefab, TransformUsageFlags.Dynamic)
                 });
+                AddBuffer<SpawnDropItemPositionsBuffer>(entity);
                 var dropItemsDataBuffer = AddBuffer<DropItemsDataBuffer>(entity);
 
                 foreach (var dropItemDo in prefabAuthoring.dropItemsData.DropItems)

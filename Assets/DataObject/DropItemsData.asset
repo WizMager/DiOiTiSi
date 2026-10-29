@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Data.DropItemsData
   _dropItems:
   - type: 1
-    text: rifle
-    weight: 0
+    weight: 10
+  - type: 2
+    weight: 70

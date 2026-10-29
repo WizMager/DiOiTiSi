@@ -1,6 +1,7 @@
 ﻿using Components;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace Systems
 {
@@ -12,6 +13,7 @@ namespace Systems
         {
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<GainExperienceBuffer>();
+            state.RequireForUpdate<SpawnDropItemPositionsBuffer>();
         }
 
         [BurstCompile]
@@ -21,9 +23,10 @@ namespace Systems
                 .CreateCommandBuffer(state.WorldUnmanaged);
             var experienceDropLookup = SystemAPI.GetComponentLookup<ExperienceDropComponent>(true);
             var playerExperienceSingleton = SystemAPI.GetSingletonBuffer<GainExperienceBuffer>();
+            var spawnDropItemPositionBufferSingleton = SystemAPI.GetSingletonBuffer<SpawnDropItemPositionsBuffer>();
             
-            foreach (var (damageBuffer, health, entity) 
-                     in SystemAPI.Query<DynamicBuffer<DamageBuffer>, RefRW<HealthComponent>>().WithEntityAccess())
+            foreach (var (damageBuffer, health, transform,  entity) 
+                     in SystemAPI.Query<DynamicBuffer<DamageBuffer>, RefRW<HealthComponent>, RefRO<LocalToWorld>>().WithEntityAccess())
             {
                 if (damageBuffer.IsEmpty)
                     continue;
@@ -46,6 +49,10 @@ namespace Systems
                     playerExperienceSingleton.Add(new GainExperienceBuffer
                     {
                         Value = experienceDropLookup[entity].Value
+                    });
+                    spawnDropItemPositionBufferSingleton.Add(new SpawnDropItemPositionsBuffer
+                    {
+                        Value = transform.ValueRO.Position
                     });
                 }
                 
