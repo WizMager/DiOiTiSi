@@ -13,6 +13,7 @@ namespace Authoring
         public float spawnCooldown = 7;
         public float health = 100;
         public float experienceDrop = 50;
+        [Range(0, 1f)] public float dropItemDropChance = 0.2f;
         
         private class EnemySpawnerAuthoringBaker : Baker<EnemySpawnerAuthoring>
         {
@@ -37,6 +38,10 @@ namespace Authoring
                 AddComponent(entity, new ExperienceDropComponent
                 {
                     Value = authoring.experienceDrop
+                });
+                AddComponent(entity, new DropItemDropChanceComponent
+                {
+                    Value = authoring.dropItemDropChance
                 });
                 AddBuffer<DamageBuffer>(entity);
 

@@ -11,6 +11,7 @@ namespace Systems
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<RandomizerTag>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<GainExperienceBuffer>();
             state.RequireForUpdate<SpawnDropItemPositionsBuffer>();
@@ -21,9 +22,10 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
-            var experienceDropLookup = SystemAPI.GetComponentLookup<ExperienceDropComponent>(true);
             var playerExperienceSingleton = SystemAPI.GetSingletonBuffer<GainExperienceBuffer>();
             var spawnDropItemPositionBufferSingleton = SystemAPI.GetSingletonBuffer<SpawnDropItemPositionsBuffer>();
+            var randomizerEntity = SystemAPI.GetSingletonEntity<RandomizerTag>();
+            var randomizer = SystemAPI.GetComponentRW<RandomComponent>(randomizerEntity);
             
             foreach (var (damageBuffer, health, transform,  entity) 
                      in SystemAPI.Query<DynamicBuffer<DamageBuffer>, RefRW<HealthComponent>, RefRO<LocalToWorld>>().WithEntityAccess())
@@ -45,15 +47,29 @@ namespace Systems
                 if (health.ValueRO.Value > 0)
                     continue;
 
-                if (experienceDropLookup.HasComponent(entity)){
+                
+                if (SystemAPI.HasComponent<ExperienceDropComponent>(entity)){
                     playerExperienceSingleton.Add(new GainExperienceBuffer
                     {
-                        Value = experienceDropLookup[entity].Value
+                        Value = SystemAPI.GetComponentRO<ExperienceDropComponent>(entity).ValueRO.Value
                     });
-                    spawnDropItemPositionBufferSingleton.Add(new SpawnDropItemPositionsBuffer
+                    
+                }
+
+                if (SystemAPI.HasComponent<DropItemDropChanceComponent>(entity))
+                {
+                    var random = randomizer.ValueRO.Value;
+                    var chance = SystemAPI.GetComponentRO<DropItemDropChanceComponent>(entity).ValueRO.Value;
+                    var dropChance = random.NextFloat(0, 1f);
+                    randomizer.ValueRW.Value = random;
+
+                    if (dropChance <= chance)
                     {
-                        Value = transform.ValueRO.Position
-                    });
+                        spawnDropItemPositionBufferSingleton.Add(new SpawnDropItemPositionsBuffer
+                        {
+                            Value = transform.ValueRO.Position
+                        });
+                    }
                 }
                 
                 ecb.DestroyEntity(entity);

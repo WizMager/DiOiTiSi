@@ -12,6 +12,7 @@ namespace Authoring
         public float attackDistance = 2f;
         public float damage = 10f;
         public float experienceDrop = 25;
+        [Range(0, 1f)] public float dropItemDropChance = 0.1f;
         
         private class EnemyAuthoringBaker : Baker<EnemyAuthoring>
         {
@@ -48,6 +49,10 @@ namespace Authoring
                 AddComponent(entity, new ExperienceDropComponent
                 {
                     Value = authoring.experienceDrop
+                });
+                AddComponent(entity, new DropItemDropChanceComponent
+                {
+                    Value = authoring.dropItemDropChance
                 });
             }
         }
