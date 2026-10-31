@@ -39,6 +39,7 @@ namespace Authoring
                     Value = authoring.health
                 });
                 AddComponent<CanAttackTag>(entity);
+                AddBuffer<PickedUpDropItemComponent>(entity);
             }
         }
     }

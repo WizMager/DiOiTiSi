@@ -26,9 +26,7 @@ namespace Systems
                 ProjectileLookup = SystemAPI.GetComponentLookup<ProjectileTag>(true),
                 EnemyLookup = SystemAPI.GetBufferLookup<DamageBuffer>(true),
                 DamageLookup = SystemAPI.GetComponentLookup<DamageComponent>(true),
-                Ecb = SystemAPI.GetSingleton<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>()
-                    .CreateCommandBuffer(state.WorldUnmanaged)
-                    .AsParallelWriter()
+                Ecb = SystemAPI.GetSingleton<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged)
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
         }
 
@@ -38,7 +36,7 @@ namespace Systems
             [ReadOnly] public BufferLookup<DamageBuffer> EnemyLookup;
             [ReadOnly] public ComponentLookup<DamageComponent> DamageLookup;
             
-            public EntityCommandBuffer.ParallelWriter Ecb;
+            public EntityCommandBuffer Ecb;
             
             public void Execute(TriggerEvent triggerEvent)
             {
@@ -51,12 +49,12 @@ namespace Systems
                 if (!ProjectileLookup.HasComponent(projectile))
                     return;
                 
-                Ecb.DestroyEntity(projectile.Index, projectile);
+                Ecb.DestroyEntity(projectile);
                 
                 if (!EnemyLookup.HasBuffer(other))
                     return;
                 
-                Ecb.AppendToBuffer(other.Index, other, new DamageBuffer
+                Ecb.AppendToBuffer(other, new DamageBuffer
                 {
                     Value = DamageLookup[projectile].Value
                 });
